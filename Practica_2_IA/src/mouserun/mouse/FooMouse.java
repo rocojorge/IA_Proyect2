@@ -11,8 +11,7 @@ public class FooMouse extends Mouse
     }
     public int move(Grid currentGrid, Cheese cheese){
         
-        return Mouse.UP;
-        return Mouse.DOWN;
+        return 1;
         
     }
     public void newCheese(){
