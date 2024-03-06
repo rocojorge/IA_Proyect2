@@ -10,86 +10,65 @@ import mouserun.game.Cheese;
 public class FooMouse extends Mouse				
 {
         
-        private HashMap<Integer,Integer> posiciones; 
-        private ArrayList<Integer> posiblesMovinientos;
-        public Integer numMovesDone;
+    private HashMap<Integer,Integer> posiciones; 
+    private final ArrayList<Integer> posiblesMovinientos;
+    private int numMovesDone;
         
         //Primero almacenamos la coordenada y luego los movinientos disponibles que hay
-        
-	private Grid lastGrid;
+    private Grid lastGrid;
 
-	public FooMouse()
-	{
-		super("FOOMOUSE");
-                posiciones = new HashMap<>(0,0);
-                posiblesMovinientos = new ArrayList<>();
-                numMovesDone = 0;
-                lastGrid = new Grid(0,0);
+    public FooMouse()
+    {
+	super("FOOMOUSE");
+        posiciones = new HashMap<>(0,0);
+        posiblesMovinientos = new ArrayList<>();
+        numMovesDone = 0;
+        lastGrid = new Grid(0,0);
                 //Tenemos las posiciones, los movinientos posibles y 
                 // una variables que nos permite saber y controlar el tamaño
                 // y posicion de los posibles movinientos.
                 
 	}
-	
-	public int move(Grid currentGrid, Cheese cheese)
+public int move(Grid currentGrid, Cheese cheese)
 	{
-            posiblesMovinientos.add(0);
-            numMovesDone = 0;
-                
-            Random random = new Random();
-            ArrayList<Integer> possibleMoves = new ArrayList<Integer>();
-                
-            if (currentGrid.canGoUp()) {
-                possibleMoves.add(Mouse.UP);
-                posiblesMovinientos.set(numMovesDone,posiblesMovinientos.get(numMovesDone)+1);
-                    
-            }
-            if (currentGrid.canGoDown()) {
-                possibleMoves.add(Mouse.DOWN);
-                posiblesMovinientos.set(numMovesDone,posiblesMovinientos.get(numMovesDone)+1);
-            }
-            if (currentGrid.canGoLeft()) {
-                possibleMoves.add(Mouse.LEFT);
-                posiblesMovinientos.set(numMovesDone,posiblesMovinientos.get(numMovesDone)+1);
-            }
-            if (currentGrid.canGoRight()) {
-                possibleMoves.add(Mouse.RIGHT);
-                posiblesMovinientos.set(numMovesDone,posiblesMovinientos.get(numMovesDone)+1);
-            }
-                
-                
+		Random random = new Random();
+		ArrayList<Integer> possibleMoves = new ArrayList<Integer>();
+		if (currentGrid.canGoUp()) possibleMoves.add(Mouse.UP);
+		if (currentGrid.canGoDown()) possibleMoves.add(Mouse.DOWN);
+		if (currentGrid.canGoLeft()) possibleMoves.add(Mouse.LEFT);
+		if (currentGrid.canGoRight()) possibleMoves.add(Mouse.RIGHT);
+		possibleMoves.add(Mouse.BOMB);
 				
-            if (posiblesMovinientos.get(numMovesDone) == 1)
-            {
-		lastGrid = currentGrid;
-		return possibleMoves.get(0);
-            }
-            else
-            {
-                if (!testGrid(Mouse.UP, currentGrid)) possibleMoves.remove((Integer)Mouse.UP);
-                if (!testGrid(Mouse.DOWN, currentGrid)) possibleMoves.remove((Integer)Mouse.DOWN);
-                if (!testGrid(Mouse.LEFT, currentGrid)) possibleMoves.remove((Integer)Mouse.LEFT);
-                if (!testGrid(Mouse.RIGHT, currentGrid)) possibleMoves.remove((Integer)Mouse.RIGHT);
-	
-                if (possibleMoves.size() == 0)
+		if (possibleMoves.size() == 1)
 		{
-                    if (currentGrid.canGoUp()) possibleMoves.add(Mouse.UP);
-                    if (currentGrid.canGoDown()) possibleMoves.add(Mouse.DOWN);
-                    if (currentGrid.canGoLeft()) possibleMoves.add(Mouse.LEFT);
-                    if (currentGrid.canGoRight()) possibleMoves.add(Mouse.RIGHT);
-                    possibleMoves.add(Mouse.BOMB);
+			lastGrid = currentGrid;
+			return possibleMoves.get(0);
+		}
+		else
+		{
+			if (!testGrid(Mouse.UP, currentGrid)) possibleMoves.remove((Integer)Mouse.UP);
+			if (!testGrid(Mouse.DOWN, currentGrid)) possibleMoves.remove((Integer)Mouse.DOWN);
+			if (!testGrid(Mouse.LEFT, currentGrid)) possibleMoves.remove((Integer)Mouse.LEFT);
+			if (!testGrid(Mouse.RIGHT, currentGrid)) possibleMoves.remove((Integer)Mouse.RIGHT);
+		
+			if (possibleMoves.size() == 0)
+			{
+				if (currentGrid.canGoUp()) possibleMoves.add(Mouse.UP);
+				if (currentGrid.canGoDown()) possibleMoves.add(Mouse.DOWN);
+				if (currentGrid.canGoLeft()) possibleMoves.add(Mouse.LEFT);
+				if (currentGrid.canGoRight()) possibleMoves.add(Mouse.RIGHT);
+				possibleMoves.add(Mouse.BOMB);
 				
-                    lastGrid = currentGrid;
-                    return possibleMoves.get(random.nextInt(possibleMoves.size()));
+				lastGrid = currentGrid;
+				return possibleMoves.get(random.nextInt(possibleMoves.size()));
 			}
 			else
 			{
-                            lastGrid = currentGrid;
-                            return possibleMoves.get(random.nextInt(possibleMoves.size()));
+				lastGrid = currentGrid;
+				return possibleMoves.get(random.nextInt(possibleMoves.size()));
 			}
 		}
-                
-               
+		
 	}
 	
 	public void newCheese()
@@ -134,5 +113,6 @@ public class FooMouse extends Mouse
 		return !(lastGrid.getX() == x && lastGrid.getY() == y);
 		
 	}
-        
+	
+	
 }
