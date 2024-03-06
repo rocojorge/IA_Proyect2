@@ -1,4 +1,4 @@
-package mouserun.mouse;
+package NOTUSEDMOUSE;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -58,13 +58,13 @@ public class MouseLoader
 					
 						if (clz.getSuperclass() == Mouse.class)
 						{						
-							//System.out.println("Mouse Detected: " + clz.getSimpleName());
+							System.out.println("Mouse Detected: " + clz.getSimpleName());
 							detected.add(clz);
 						}
 					}
 				}
 			}
-			//System.out.println();
+			System.out.println();
 			
 		}
 		catch (Exception ex)
