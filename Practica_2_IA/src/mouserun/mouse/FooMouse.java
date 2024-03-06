@@ -6,30 +6,19 @@ import java.util.Random;
 import mouserun.game.Mouse;
 import mouserun.game.Grid;
 import mouserun.game.Cheese;
-
-public class FooMouse extends Mouse				
+public class FooMouse
+	extends Mouse				
 {
-        
-    private HashMap<Integer,Integer> posiciones; 
-    private final ArrayList<Integer> posiblesMovinientos;
-    private int numMovesDone;
-        
-        //Primero almacenamos la coordenada y luego los movinientos disponibles que hay
-    private Grid lastGrid;
 
-    public FooMouse()
-    {
-	super("FOOMOUSE");
-        posiciones = new HashMap<>(0,0);
-        posiblesMovinientos = new ArrayList<>();
-        numMovesDone = 0;
-        lastGrid = new Grid(0,0);
-                //Tenemos las posiciones, los movinientos posibles y 
-                // una variables que nos permite saber y controlar el tamaño
-                // y posicion de los posibles movinientos.
-                
+	private Grid lastGrid;
+        private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
+
+	public FooMouse()
+	{
+		super("FooMOUSE");		
 	}
-public int move(Grid currentGrid, Cheese cheese)
+	
+	public int move(Grid currentGrid, Cheese cheese)
 	{
 		Random random = new Random();
 		ArrayList<Integer> possibleMoves = new ArrayList<Integer>();
@@ -114,5 +103,50 @@ public int move(Grid currentGrid, Cheese cheese)
 		
 	}
 	
-	
+
+        class Pair<U, V> {
+
+        public final U first;       // el primer campo de un par
+        public final V second;      // el segundo campo de un par
+
+        // Construye un nuevo par con valores especificados
+        private Pair(U first, V second) {
+            this.first = first;
+            this.second = second;
+        }
+        
+        @Override
+        // Verifica que el objeto especificado sea "igual a" el objeto actual o no
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            
+            Pair<?, ?> pair = (Pair<?, ?>) o;
+
+            // llamar al método `equals()` de los objetos subyacentes
+            if (!first.equals(pair.first)) {
+                return false;
+            }
+            return second.equals(pair.second);
+        }
+        
+        @Override
+        // Calcula el código hash de un objeto para admitir tablas hash
+        public int hashCode() {
+            // usa códigos hash de los objetos subyacentes
+            return 31 * first.hashCode() + second.hashCode();
+        }
+        
+        @Override
+        public String toString() {
+            return "(" + first + ", " + second + ")";
+        }
+        
+    }
+    
 }
