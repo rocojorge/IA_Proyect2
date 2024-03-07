@@ -22,7 +22,7 @@ public class Segunda_Prueba extends Mouse {
     private HashMap<Integer, Grid> celdas_frecuentes;
     // Mapa que almacena todas las celdas visitadas durante la ejecución
     private HashMap<Integer, Grid> celdas_totales;
-    // Pila que almacena los movimientos inversos realizados por el ratón
+    // Pila que almacena los movimientos realizados por el ratón
     private LinkedList<Integer> movimientos;
 
     /**
@@ -30,10 +30,11 @@ public class Segunda_Prueba extends Mouse {
      * Inicializa los atributos con valores vacíos y asigna el nombre "Explorador" al ratón.
      */
     public Segunda_Prueba(){
-        super("Explorador");
-        this.celdas_frecuentes = new HashMap<>();
-        this.celdas_totales = new HashMap<>();
-        this.movimientos = new LinkedList<>();
+        super("M24A11");
+        this.movimientos=new LinkedList<>();
+        this.celdas_frecuentes=new HashMap<>();
+        this.celdas_totales=new HashMap<>();
+        
     }
 
     /**
@@ -47,12 +48,95 @@ public class Segunda_Prueba extends Mouse {
      */
     @Override
     public int move(Grid currentGrid, Cheese cheese) {
-        agrega_celda( currentGrid );
-        Integer movimiento = posibles_movimientos( currentGrid );
-        if ( !movimiento.equals( SIN_MOVIMIENTOS ) )
+        agrega_celda(currentGrid);
+        Integer movimiento=posibles_movimientos(currentGrid);
+        if (!movimiento.equals(SIN_MOVIMIENTOS))
             return movimiento;
         else
             return sinMovimientos();
+    }
+    
+    /**
+     * Método que devuelve una lista de los movimientos posibles desde una celda_actual.
+     * Comprueba si la celda_actual tiene salidas en las cuatro direcciones y las añade a una lista.
+     * Si la lista no está vacía, recorre sus elementos y elimina los que corresponden a celdas ya visitadas.
+     * @param celda_actual La celda actual del ratón
+     * @return Un entero que representa un movimiento posible al azar, o SIN_MOVIMIENTOS si no hay ninguno
+     */
+    private Integer posibles_movimientos( Grid celda_actual )
+    {
+        ArrayList<Integer> posibles = new ArrayList<>();
+        if (celda_actual.canGoDown()) posibles.add(Mouse.DOWN);
+        if (celda_actual.canGoUp()) posibles.add(Mouse.UP);
+        if (celda_actual.canGoLeft()) posibles.add(Mouse.LEFT);
+        if (celda_actual.canGoRight()) posibles.add(Mouse.RIGHT);
+        if (!posibles.isEmpty()){
+            for (int i=0;i<posibles.size(); i++){
+                Integer movimiento_ret = posibles.get(i);
+                if (!celda_visitada(movimiento_ret, celda_actual)){
+                    movimientos.push(movimiento_inverso(movimiento_ret));
+                    return movimiento_ret;
+                }
+            }
+        }
+        return SIN_MOVIMIENTOS;
+    }
+    
+    /**
+     * Método que comprueba si una celda en una dirección determinada ha sido visitada o no.
+     * Calcula las coordenadas de la celda en la dirección indicada y busca su identificador_celda en el mapa celdas_frecuentes.
+     * @param direccion La dirección a comprobar (Mouse.UP, Mouse.DOWN, Mouse.LEFT o Mouse.RIGHT)
+     * @param celda La celda actual del ratón
+     * @return Un booleano que indica si la celda ha sido visitada (true) o no (false)
+     */
+    private Boolean celda_visitada(Integer direccion,Grid celda ){
+        
+        int x=celda.getX();
+        int y=celda.getY();
+        switch (direccion)
+        {
+            case Mouse.UP:
+                y++;
+                break;
+            case Mouse.DOWN:
+                y--;
+                break;
+            case Mouse.LEFT:
+                x--;
+                break;
+            case Mouse.RIGHT:
+                x++;
+                break;
+        }
+        boolean to_ret=(celdas_frecuentes.get(identificador_celda(x,y)) == null);
+        return !(to_ret);
+    }
+    
+    /**
+     * Método que devuelve el movimiento movimiento_inverso a uno dado.
+     * Utiliza un switch para asignar el valor correspondiente según la dirección.
+     * @param direccion La dirección a invertir (Mouse.UP, Mouse.DOWN, Mouse.LEFT o Mouse.RIGHT)
+     * @return Un entero que representa el movimiento movimiento_inverso
+     */
+    private Integer movimiento_inverso( Integer direccion ){
+        
+        Integer movimiento_inverso = 0;
+
+        switch (direccion){
+            case Mouse.UP:
+                movimiento_inverso=Mouse.DOWN;
+                break;
+            case Mouse.LEFT:
+                movimiento_inverso=Mouse.RIGHT;
+                break;
+            case Mouse.RIGHT:
+                movimiento_inverso=Mouse.LEFT;
+                break;
+            case Mouse.DOWN:
+                movimiento_inverso=Mouse.UP;
+                break;
+        }
+        return movimiento_inverso;
     }
 
     /**
@@ -61,8 +145,8 @@ public class Segunda_Prueba extends Mouse {
      */
     @Override
     public void respawned() {
-        celdas_frecuentes = new HashMap<>();
-        movimientos = new LinkedList<>();
+        celdas_frecuentes=new HashMap<>();
+        movimientos=new LinkedList<>();
     }
 
     /**
@@ -82,7 +166,8 @@ public class Segunda_Prueba extends Mouse {
     private Integer sinMovimientos(){
         if ( !movimientos.isEmpty() ){
             return movimientos.pop();
-        } else {
+        } else 
+        {
             celdas_frecuentes = new HashMap<>();
         }
         return 0;
@@ -95,13 +180,15 @@ public class Segunda_Prueba extends Mouse {
      * @param celda La celda a añadir
      */
     private void agrega_celda( Grid celda ){
-        int x = celda.getX();
-        int y = celda.getY();
-
+        
+        int x=celda.getX();
+        
+        int y=celda.getY();
         celdas_frecuentes.putIfAbsent( identificador_celda(x, y), celda );
 
         if (celdas_totales.get(identificador_celda(x, y)) == null) {
             celdas_totales.put(identificador_celda(x, y), celda);
+            
             incExploredGrids();
         }
     }
@@ -114,85 +201,7 @@ public class Segunda_Prueba extends Mouse {
      * @return Un entero que representa la identificador_celda de la celda
      */
     private Integer identificador_celda( int x, int y ){
-        return (x*10000+y);
-    }
-
-    /**
-     * Método que comprueba si una celda en una dirección determinada ha sido visitada o no.
-     * Calcula las coordenadas de la celda en la dirección indicada y busca su identificador_celda en el mapa celdas_frecuentes.
-     * @param direccion La dirección a comprobar (Mouse.UP, Mouse.DOWN, Mouse.LEFT o Mouse.RIGHT)
-     * @param celda La celda actual del ratón
-     * @return Un booleano que indica si la celda ha sido visitada (true) o no (false)
-     */
-    private Boolean celda_visitada(Integer direccion, Grid celda ){
-        int x = celda.getX();
-        int y = celda.getY();
-
-        switch ( direccion ){
-            case Mouse.UP:
-                y++;
-                break;
-            case Mouse.DOWN:
-                y--;
-                break;
-            case Mouse.LEFT:
-                x--;
-                break;
-            case Mouse.RIGHT:
-                x++;
-                break;
-        }
-        return !(celdas_frecuentes.get(identificador_celda( x, y)) == null);
-    }
-
-    /**
-     * Método que devuelve una lista de los movimientos posibles desde una celda_actual.
-     * Comprueba si la celda_actual tiene salidas en las cuatro direcciones y las añade a una lista.
-     * Si la lista no está vacía, recorre sus elementos y elimina los que corresponden a celdas ya visitadas.
-     * @param celda_actual La celda actual del ratón
-     * @return Un entero que representa un movimiento posible al azar, o SIN_MOVIMIENTOS si no hay ninguno
-     */
-    private Integer posibles_movimientos( Grid celda_actual ){
-        ArrayList<Integer> posibles = new ArrayList<>();
-        if ( celda_actual.canGoDown() ) posibles.add( Mouse.DOWN) ;
-        if ( celda_actual.canGoUp() ) posibles.add( Mouse.UP) ;
-        if ( celda_actual.canGoLeft() ) posibles.add( Mouse.LEFT) ;
-        if ( celda_actual.canGoRight() ) posibles.add( Mouse.RIGHT) ;
-        if ( !posibles.isEmpty() ){
-            for (int i = 0; i < posibles.size(); i++) {
-                Integer movimiento = posibles.get(i);
-                if ( !celda_visitada( movimiento, celda_actual ) ){
-                    movimientos.push(movimiento_inverso(movimiento));
-                    return movimiento;
-                }
-            }
-        }
-        return SIN_MOVIMIENTOS;
-    }
-
-    /**
-     * Método que devuelve el movimiento movimiento_inverso a uno dado.
-     * Utiliza un switch para asignar el valor correspondiente según la dirección.
-     * @param direccion La dirección a invertir (Mouse.UP, Mouse.DOWN, Mouse.LEFT o Mouse.RIGHT)
-     * @return Un entero que representa el movimiento movimiento_inverso
-     */
-    private Integer movimiento_inverso( Integer direccion ){
-        Integer movimiento_inverso = null;
-
-        switch ( direccion ){
-            case Mouse.UP:
-                movimiento_inverso = Mouse.DOWN;
-                break;
-            case Mouse.LEFT:
-                movimiento_inverso = Mouse.RIGHT;
-                break;
-            case Mouse.RIGHT:
-                movimiento_inverso = Mouse.LEFT;
-                break;
-            case Mouse.DOWN:
-                movimiento_inverso = Mouse.UP;
-                break;
-        }
-        return movimiento_inverso;
-    }
+        int to_ret= (x*10000+y);
+        return to_ret;
+    }    
 }
