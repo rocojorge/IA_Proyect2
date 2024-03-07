@@ -1,4 +1,4 @@
-package mouserun.mouse;		
+package NOTUSEDMOUSE;		
 import mouserun.game.*;		
 import java.util.*;
 import java.util.ArrayList;
