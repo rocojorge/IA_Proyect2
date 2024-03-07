@@ -13,7 +13,7 @@ import java.util.*;
  * El mapa celdas_frecuentes se reinicia cada vez que el ratón muere, mientras que el mapa celdas_totales se mantiene durante toda la ejecución.
  * El ratón utiliza una pila de movimientos para volver atrás cuando se queda sin opciones, y hace return 0 cuando la pila está vacía.
  */
-public class Segunda_Prueba extends Mouse {
+public class M24A11 extends Mouse {
 
     // Constante que indica que no hay movimientos posibles
     private final Integer SIN_MOVIMIENTOS = 0;
@@ -29,8 +29,8 @@ public class Segunda_Prueba extends Mouse {
      * Constructor de la clase Segunda_Prueba.
      * Inicializa los atributos con valores vacíos y asigna el nombre "Explorador" al ratón.
      */
-    public Segunda_Prueba(){
-        super("M24A11");
+    public M24A11(){
+        super("M24A11_Explorer");
         this.movimientos=new LinkedList<>();
         this.celdas_frecuentes=new HashMap<>();
         this.celdas_totales=new HashMap<>();
@@ -41,7 +41,7 @@ public class Segunda_Prueba extends Mouse {
      * Método que determina el siguiente movimiento del ratón en función de la celda actual.
      * Añade la celda actual a los mapas de memoria y comprueba si hay movimientos posibles.
      * Si los hay, devuelve uno de ellos al azar, evitando los que ya ha visitado.
-     * Si no los hay, devuelve el método sinMovimientos() que gestiona la pila de movimientos.
+     * Si no los hay, devuelve el método sin_movimientos() que gestiona la pila de movimientos.
      * @param currentGrid La celda actual del ratón
      * @param cheese El queso actual
      * @return Un entero que representa el movimiento elegido (Mouse.UP, Mouse.DOWN, Mouse.LEFT, Mouse.RIGHT o Mouse.BOMB)
@@ -53,7 +53,7 @@ public class Segunda_Prueba extends Mouse {
         if (!movimiento.equals(SIN_MOVIMIENTOS))
             return movimiento;
         else
-            return sinMovimientos();
+            return sin_movimientos();
     }
     
     /**
@@ -63,7 +63,7 @@ public class Segunda_Prueba extends Mouse {
      * @param celda_actual La celda actual del ratón
      * @return Un entero que representa un movimiento posible al azar, o SIN_MOVIMIENTOS si no hay ninguno
      */
-    private Integer posibles_movimientos( Grid celda_actual )
+    private Integer posibles_movimientos(Grid celda_actual)
     {
         ArrayList<Integer> posibles = new ArrayList<>();
         if (celda_actual.canGoDown()) posibles.add(Mouse.DOWN);
@@ -89,7 +89,7 @@ public class Segunda_Prueba extends Mouse {
      * @param celda La celda actual del ratón
      * @return Un booleano que indica si la celda ha sido visitada (true) o no (false)
      */
-    private Boolean celda_visitada(Integer direccion,Grid celda ){
+    private Boolean celda_visitada(Integer direccion,Grid celda){
         
         int x=celda.getX();
         int y=celda.getY();
@@ -118,7 +118,7 @@ public class Segunda_Prueba extends Mouse {
      * @param direccion La dirección a invertir (Mouse.UP, Mouse.DOWN, Mouse.LEFT o Mouse.RIGHT)
      * @return Un entero que representa el movimiento movimiento_inverso
      */
-    private Integer movimiento_inverso( Integer direccion ){
+    private Integer movimiento_inverso(Integer direccion){
         
         Integer movimiento_inverso = 0;
 
@@ -144,7 +144,8 @@ public class Segunda_Prueba extends Mouse {
      * Reinicia el mapa celdas_frecuentes y la pila de movimientos, manteniendo el mapa celdas_totales.
      */
     @Override
-    public void respawned() {
+    public void respawned()
+        {
         celdas_frecuentes=new HashMap<>();
         movimientos=new LinkedList<>();
     }
@@ -163,7 +164,7 @@ public class Segunda_Prueba extends Mouse {
      * Si la pila está vacía, reinicia el mapa celdas_frecuentes y devuelve 0.
      * @return Un entero que representa el movimiento elegido (Mouse.UP, Mouse.DOWN, Mouse.LEFT, Mouse.RIGHT o Mouse.BOMB)
      */
-    private Integer sinMovimientos(){
+    private Integer sin_movimientos(){
         if ( !movimientos.isEmpty() ){
             return movimientos.pop();
         } else 
@@ -182,26 +183,25 @@ public class Segunda_Prueba extends Mouse {
     private void agrega_celda( Grid celda ){
         
         int x=celda.getX();
-        
         int y=celda.getY();
+
         celdas_frecuentes.putIfAbsent( identificador_celda(x, y), celda );
 
         if (celdas_totales.get(identificador_celda(x, y)) == null) {
             celdas_totales.put(identificador_celda(x, y), celda);
-            
             incExploredGrids();
         }
     }
 
     /**
      * Método que genera una identificador_celda única para una celda a partir de sus coordenadas x e y.
-     * Multiplica la coordenada x por 10000 y le suma la coordenada y, asumiendo que ambas son positivas y menores que 100.
+     * Multiplica la coordenada x por 99999 y le suma la coordenada y, asumiendo que ambas son positivas y menores que 100.
      * @param x La coordenada x de la celda
      * @param y La coordenada y de la celda
      * @return Un entero que representa la identificador_celda de la celda
      */
     private Integer identificador_celda( int x, int y ){
-        int to_ret= (x*10000+y);
+        int to_ret= (x*99999+y);
         return to_ret;
     }    
 }
