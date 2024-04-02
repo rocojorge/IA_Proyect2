@@ -124,17 +124,33 @@ public class M24A11bpa extends Mouse {
         }
     }
     
-    private HashMap<Pair<Integer, Integer>, Nodo> Nodoso;
-    private Queue<Nodo> Cola_ = new ArrayDeque<>();
+    
+    private HashMap<Pair<Integer, Integer>, Nodo> Nodo_so =  new HashMap<>();
+    private HashMap<Pair<Integer,Integer>,Nodo> Nodos_corto;
+    private Nodo Nodo_del_principio;
+    private LinkedList<Integer> movimientos_devuelta;
+    private Queue<Pair<Integer,Integer>> Cola_ = new ArrayDeque<>();//Cola de nodos a visitar en una vuelta
 
         
     
     public M24A11bpa(){
         super("M24A11_BreadthExplorer");
+        this.Nodo_so = new HashMap<>();
+        this.Cola_=new ArrayDeque<>();
     }
     
     public int move(Grid currentGrid, Cheese cheese) {
-        Nodoso.put();
+        //Primero me fijo en la cola y hago la cola
+        //Escribir aquí
+        if (Cola_.isEmpty()){return 0;//Vuelvo al inicio con la pila
+        }
+        else{
+            ArrayList<Integer> movimientos = posibles_movimientos(currentGrid);
+            
+            
+        }
+        //Evalúo mis alrededores y listo casillas.
+        
         return 1;
     }
     
@@ -148,6 +164,21 @@ public class M24A11bpa extends Mouse {
         
         return posibles; 
             
+    }
+    
+    private void casillas_visitar(Grid celda_actual){
+        ArrayList<Integer> posibles;
+        posibles = posibles_movimientos(celda_actual);
+        
+        for(int i =0; i<posibles.size();i++){
+            if (posibles.get(i)==1){
+                Pair<Integer,Integer> root_up = new Pair(celda_actual.getX(),celda_actual.getY()+1);
+                Nodo celda_root_up= new Nodo(celda_actual.getX(),celda_actual.getY());
+                Nodo_so.putIfAbsent(root_up,celda_root_up);
+            }
+        }
+        
+        
     }
     public void respawned(){}
     
