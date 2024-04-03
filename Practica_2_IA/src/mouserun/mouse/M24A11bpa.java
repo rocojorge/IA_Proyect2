@@ -24,16 +24,26 @@ public class M24A11bpa extends Mouse {
     private HashMap<Integer, Grid> celdas_totales;
     // Pila que almacena los movimientos realizados por el ratón
     private LinkedList<Integer> movimientos;
+    //Lista de los vecinos
+    private LinkedList<LinkedList<Grid>> pila_vecinos;
+    //Lista de nodos principales por niveles
+    private LinkedList<Grid> nodos_principales;
+    //Profundida del arbol
+    private int profundidad =0;
+    private int num_elemento = 0;
 
     /**
      * Constructor de la clase Segunda_Prueba.
      * Inicializa los atributos con valores vacíos y asigna el nombre "Explorador" al ratón.
      */
     public M24A11bpa(){
-        super("M24A11_Explorer");
+        super("M24A11_BPA");
         this.movimientos=new LinkedList<>();
         this.celdas_frecuentes=new HashMap<>();
         this.celdas_totales=new HashMap<>();
+        this.pila_vecinos=new LinkedList<>();
+        this.profundidad= 0;
+        this.num_elemento=0;
         
     }
 
@@ -54,6 +64,60 @@ public class M24A11bpa extends Mouse {
             return movimiento;
         else
             return sin_movimientos();
+    }
+    
+    /**
+     * 
+     */
+    
+    private int bfs(Grid currentGrid){
+        
+        LinkedList<Grid> lista_adyacentes=obtener_Adyacentes(currentGrid);
+        if (lista_adyacentes.size()>0){
+            for (int i =0;i<=profundidad;i++){
+                pila_vecinos.add(i,lista_adyacentes);
+            
+            }
+        }
+        
+        
+        
+        
+        return 0;
+    }
+    
+    
+    /**
+     * Un metodo para obtener todas las celdas posibles para construir el camino
+     * @param hijoActual La celda actual 
+     * @return El metodo devuevle un array con los posibles movimientos
+     */
+    private LinkedList<Grid> obtener_Adyacentes(Grid hijoActual){
+        LinkedList<Grid> salida = new LinkedList<>();
+        int actual = identificador_celda(hijoActual.getX(), hijoActual.getY());
+        
+        //si la celda de arriba esta visitada y puede ir arriba
+        int arriba = identificador_celda(hijoActual.getX(), hijoActual.getY()+1);
+        if((!celdas_totales.containsKey(arriba) && celdas_totales.get(actual).canGoUp())){
+            salida.add(celdas_totales.get(arriba));
+        }
+        //si la celda de abajo esta visitada y puede ir abajo
+        int abajo = identificador_celda(hijoActual.getX(), hijoActual.getY()-1);
+        if((!celdas_totales.containsKey(abajo) && celdas_totales.get(actual).canGoDown())){
+            salida.add(celdas_totales.get(abajo));
+        }
+        //si la celda de izquierda esta visitada y puede ir izquierda
+        int izquierda = identificador_celda(hijoActual.getX()-1, hijoActual.getY());
+        if((!celdas_totales.containsKey(izquierda) && celdas_totales.get(actual).canGoLeft())){
+            salida.add(celdas_totales.get(izquierda));
+        }
+        //si la celda de derecha esta visitada y puede ir derecha
+        int derecha = identificador_celda(hijoActual.getX()+1, hijoActual.getY());
+        if((!celdas_totales.containsKey(derecha) && celdas_totales.get(actual).canGoRight())){
+            salida.add(celdas_totales.get(derecha));
+        }
+        
+        return salida;
     }
     
     /**
