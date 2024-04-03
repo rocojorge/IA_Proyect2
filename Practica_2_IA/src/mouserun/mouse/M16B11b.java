@@ -312,28 +312,7 @@ public class M16B11b extends Mouse {
      * @return devuelve un movimiento directo hacia el queso en caso de estar
      * accesible
      */
-    public boolean quesoCerca(Grid casillaActual, Cheese quesito) {
-        if (quesito.getY() == casillaActual.getY()) {
-            if ((quesito.getX() == casillaActual.getX() + 1 && casillaActual.canGoRight()) || (quesito.getX() == casillaActual.getX() - 1 && casillaActual.canGoLeft())) {
-                ultimaCasillaU = false;
-                ultimaCasillaD = false;
-                ultimaCasillaL = false;
-                ultimaCasillaR = false;
-                return true;
-            }
-        }
-        if (quesito.getX() == casillaActual.getX()) {
-            if ((quesito.getY() == casillaActual.getY() + 1 && casillaActual.canGoUp()) || (quesito.getY() == casillaActual.getY() - 1 && casillaActual.canGoDown())) {
-                ultimaCasillaU = false;
-                ultimaCasillaD = false;
-                ultimaCasillaL = false;
-                ultimaCasillaR = false;
-                return true;
-            }
-        }
-        return false;
-    }
-
+  
     private static boolean mejoraCamino(HashMap<Integer, Nodo> hm, Nodo hijo) {
         Nodo n = hm.get(clavemapa(hijo.casilla.getX(), hijo.casilla.getY()));
         return (n != null && (n.AcCoste + n.coste) < (hijo.AcCoste + hijo.coste));
