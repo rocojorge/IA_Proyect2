@@ -159,6 +159,7 @@ public class m14C02Demonos extends Mouse {
 
     @Override
     public int move(Grid currentGrid, Cheese cheese) {
+        
         //Creamos un Pair, con la posición actual y una referancia a un mouseNode
         Pair<Integer, Integer> currentPos = new Pair<>(currentGrid.getX(), currentGrid.getY());
         mouseNode currentNode;

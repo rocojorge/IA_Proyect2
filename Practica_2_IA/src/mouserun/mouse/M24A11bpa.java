@@ -67,6 +67,7 @@ public class M24A11bpa extends Mouse {
         this.celdas_frecuentes=new HashMap<>();
         this.celdas_totales=new HashMap<>();
         this.cerradas = new HashMap<>();
+        this.camino = new LinkedList<>();
         this.abiertas = new LinkedList();
         this.pila_vecinos=new LinkedList<>();
         this.profundidad= 0;
@@ -86,9 +87,16 @@ public class M24A11bpa extends Mouse {
     @Override
     public int move(Grid currentGrid, Cheese cheese) {
         agrega_celda(currentGrid);
-        Integer movimiento=posibles_movimientos(currentGrid);
-        
-        
+        Integer movimiento=posibles_movimientos(currentGrid, cheese);
+        Grid cheese_grid = new Grid(cheese.getX(),cheese.getY());
+       
+        for(int i=0;i<celdas_totales.size();i++){
+            if (cheese_grid==celdas_totales.get(i)){
+                BPA(currentGrid,cheese);
+                return seguir_camino(camino,currentGrid);
+                
+            }
+        }
         if (!movimiento.equals(SIN_MOVIMIENTOS))
             return movimiento;
         else{
@@ -101,7 +109,7 @@ public class M24A11bpa extends Mouse {
         Grid inicial = celdas_frecuentes.get(identificador_celda(cheese.getX(),cheese.getY()));
         abiertas.add(new Node(inicial,null));
         while(true){
-            Node procesando = abiertas.pollFirst();
+            Node procesando = abiertas.pollFirst();//////////////////////IMPORTANTE
             assert procesando != null;
             cerradas.put(identificador_celda(procesando.actual.getX(),procesando.actual.getY()),procesando);
             if(procesando.actual.getX() == currentGrid.getX() && procesando.actual.getY()== currentGrid.getY()){
@@ -141,39 +149,22 @@ public class M24A11bpa extends Mouse {
         }
     }
     
-    
-    /**
-     * Un metodo para obtener todas las celdas posibles para construir el camino
-     * @param hijoActual La celda actual 
-     * @return El metodo devuevle un array con los posibles movimientos
-     */
-    private LinkedList<Grid> obtener_Adyacentes (Grid hijoActual)
-    {
-        LinkedList<Grid> salida = new LinkedList<>();
-        int actual = identificador_celda(hijoActual.getX(), hijoActual.getY());
+    private int seguir_camino(LinkedList<Grid> camino, Grid currentGrid){
         
-        //si la celda de arriba esta visitada y puede ir arriba
-        int arriba = identificador_celda(hijoActual.getX(), hijoActual.getY()+1);
-        if((!celdas_totales.containsKey(arriba) && celdas_totales.get(actual).canGoUp())){
-            salida.add(celdas_totales.get(arriba));
-        }
-        //si la celda de abajo esta visitada y puede ir abajo
-        int abajo = identificador_celda(hijoActual.getX(), hijoActual.getY()-1);
-        if((!celdas_totales.containsKey(abajo) && celdas_totales.get(actual).canGoDown())){
-            salida.add(celdas_totales.get(abajo));
-        }
-        //si la celda de izquierda esta visitada y puede ir izquierda
-        int izquierda = identificador_celda(hijoActual.getX()-1, hijoActual.getY());
-        if((!celdas_totales.containsKey(izquierda) && celdas_totales.get(actual).canGoLeft())){
-            salida.add(celdas_totales.get(izquierda));
-        }
-        //si la celda de derecha esta visitada y puede ir derecha
-        int derecha = identificador_celda(hijoActual.getX()+1, hijoActual.getY());
-        if((!celdas_totales.containsKey(derecha) && celdas_totales.get(actual).canGoRight())){
-            salida.add(celdas_totales.get(derecha));
-        }
+        if (currentGrid.getX()+1==camino.pollFirst().getX()){
+            camino.pollFirst();
+            return Mouse.RIGHT;}
+        if (currentGrid.getX()-1==camino.pollFirst().getX()){
+            camino.pollFirst();
+            return Mouse.LEFT;}
+        if (currentGrid.getY()+1==camino.pollFirst().getX()){
+            camino.pollFirst();
+            return Mouse.UP;}
+        if (currentGrid.getY()+1==camino.pollFirst().getX()){
+            camino.pollFirst();
+            return Mouse.DOWN;}
+        return SIN_MOVIMIENTOS;
         
-        return salida;
     }
     
     /**
@@ -183,7 +174,7 @@ public class M24A11bpa extends Mouse {
      * @param celda_actual La celda actual del ratón
      * @return Un entero que representa un movimiento posible al azar, o SIN_MOVIMIENTOS si no hay ninguno
      */
-    private Integer posibles_movimientos(Grid celda_actual)
+    private Integer posibles_movimientos(Grid celda_actual, Cheese cheese)
     {
         ArrayList<Integer> posibles = new ArrayList<>();
         if (celda_actual.canGoUp()) posibles.add(Mouse.UP);
@@ -191,6 +182,11 @@ public class M24A11bpa extends Mouse {
         if (celda_actual.canGoDown()) posibles.add(Mouse.DOWN);
         if (celda_actual.canGoLeft()) posibles.add(Mouse.LEFT);
         if (!posibles.isEmpty()){
+            if(celda_actual.getX()+1==cheese.getX()&&celda_actual.getY()==cheese.getY()) return Mouse.RIGHT;
+            if(celda_actual.getX()-1==cheese.getX()&&celda_actual.getY()==cheese.getY()) return Mouse.LEFT;
+            if(celda_actual.getX()==cheese.getX()&&celda_actual.getY()+1==cheese.getY()) return Mouse.UP;
+            if(celda_actual.getX()==cheese.getX()&&celda_actual.getY()-1==cheese.getY()) return Mouse.DOWN;
+            
             for (int i=0;i<posibles.size(); i++){
                 Integer movimiento_ret = posibles.get(i);
                 if (!celda_visitada(movimiento_ret, celda_actual)){

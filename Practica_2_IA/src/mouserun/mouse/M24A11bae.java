@@ -163,10 +163,8 @@ public class M24A11bae extends Mouse {
         if (nodos_conocidos.containsKey(currentPos)) {
             Nodo_actual = nodos_conocidos.get(currentPos);
         } else {
-            Nodo_actual = new nodo_raton(
-                    currentPos,
-                    Grid_actual.canGoUp(), Grid_actual.canGoDown(),
-                    Grid_actual.canGoLeft(), Grid_actual.canGoRight()
+            incExploredGrids();
+            Nodo_actual = new nodo_raton(currentPos,Grid_actual.canGoUp(), Grid_actual.canGoDown(),Grid_actual.canGoLeft(), Grid_actual.canGoRight()
             );
 
             nodos_conocidos.put(currentPos, Nodo_actual);
@@ -236,7 +234,8 @@ public class M24A11bae extends Mouse {
             getCamino(Nodo_actual, target);
             //Obtenemos un camino al queso o a una casilla no explorada.
         }
-
+        
+        
         return camino.pop();
     }
     
@@ -592,6 +591,8 @@ public class M24A11bae extends Mouse {
 
         return costeCasilla * 2 + dist_target;
     }
+    
+    
 
     
 }
