@@ -141,8 +141,6 @@ public class M24A11bae extends Mouse {
 
     private boolean busqueda_informada;
 
-    //CONSTRUCTOR
-    //===========
     public M24A11bae() {
         super("M24A11bae");
         Contador_bomba = 0;
@@ -160,7 +158,7 @@ public class M24A11bae extends Mouse {
         Pair<Integer, Integer> currentPos = new Pair<>(Grid_actual.getX(), Grid_actual.getY());
         nodo_raton Nodo_actual;
 
-        //Buscamos en nodos_conocidos la posición actual. Si está, Nodo_actual será el nodo almacenado en caso contrario, se crea un nuevo nodo y se almacena.
+ //Buscamos en nodos_conocidos la posición actual. Si está, Nodo_actual será el nodo almacenado en caso contrario, se crea un nuevo nodo y se almacena.
         
         if (nodos_conocidos.containsKey(currentPos)) {
             Nodo_actual = nodos_conocidos.get(currentPos);
@@ -286,17 +284,24 @@ public class M24A11bae extends Mouse {
         }
 
     }
-
-    @Override
-    public void newCheese() {
-        camino.clear();
-    }
-
-    @Override
-    public void respawned() {
-        camino.clear();
-    }
     
+    /**
+     * Dadas dos posiciones, devuelve la dirección a seguir por el ratón para llegar de una a otra.
+     * @param init posición inicial
+     * @param target posición destino
+     * @return Movimiento para ir de init a target.
+     */
+    private int get_direction(Pair<Integer, Integer> init, Pair<Integer, Integer> target) {
+        if (target.second - 1 == init.second) {
+            return Mouse.UP;
+        } else if (target.second + 1 == init.second) {
+            return Mouse.DOWN;
+        } else if (target.first - 1 == init.first) {
+            return Mouse.RIGHT;
+        } else {
+            return Mouse.LEFT;
+        }
+    }
     /**
      * Realiza una búsqueda en profundidad limitada. Almacenara los antecesores de cada nodo para poder calcular el camino y manejará una lista de nodos
      * candidatos, no explorados exclusivamente, que se emplearán en el cálculo del nodo a devolver.
@@ -427,6 +432,12 @@ public class M24A11bae extends Mouse {
     }
     
 
+
+    @Override
+    public void newCheese() {
+        camino.clear();
+    }
+    
     /**
      * Emplea la búsqueda A* para hallar un camino entre el nodo root_node y la posición target
      * @param root_node nodo inicial.
@@ -525,8 +536,12 @@ public class M24A11bae extends Mouse {
         }
     }
 
-    
 
+    @Override
+    public void respawned() {
+        camino.clear();
+    }
+    
     int camino_minimo(Pair<Integer, Integer> init, Pair<Integer, Integer> target) {
         return (Math.abs(target.first - init.first)) + (Math.abs(target.second - init.second));
     }
@@ -578,21 +593,5 @@ public class M24A11bae extends Mouse {
         return costeCasilla * 2 + dist_target;
     }
 
-    /**
-     * Dadas dos posiciones, devuelve la dirección a seguir por el ratón para llegar de una a otra.
-     * @param init posición inicial
-     * @param target posición destino
-     * @return Movimiento para ir de init a target.
-     */
-    private int get_direction(Pair<Integer, Integer> init, Pair<Integer, Integer> target) {
-        if (target.second - 1 == init.second) {
-            return Mouse.UP;
-        } else if (target.second + 1 == init.second) {
-            return Mouse.DOWN;
-        } else if (target.first - 1 == init.first) {
-            return Mouse.RIGHT;
-        } else {
-            return Mouse.LEFT;
-        }
-    }
+    
 }
