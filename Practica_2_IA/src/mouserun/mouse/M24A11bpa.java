@@ -62,11 +62,33 @@ public class M24A11bpa extends Mouse {
     public int move(Grid currentGrid, Cheese cheese) {
         agrega_celda(currentGrid);
         Integer movimiento=posibles_movimientos(currentGrid);
-        if (profundidad==0) bfs(currentGrid);
+        
+        if (profundidad==0){ //Funcionamiento en el nivel 0
+            bfs(currentGrid);
+            if(num_elemento==0) {
+                num_elemento++;
+                return posibles_movimientos(currentGrid);
+            }
+            if (currentGrid!=pila_vecinos.get(profundidad).get(num_elemento))
+                return movimiento_inverso(movimientos.pop());
+            else{
+                if(pila_vecinos.get(profundidad).size()==num_elemento+1){
+                profundidad++;
+                }
+                else{
+                    num_elemento++;
+                }
+                return posibles_movimientos(currentGrid);
+            }
+            
+            
+            
+        
+        }
         if (!movimiento.equals(SIN_MOVIMIENTOS)){
             if (currentGrid==pila_vecinos.get(profundidad).get(num_elemento)){
-            num_elemento++;
-            bfs(currentGrid);
+                num_elemento++;
+                bfs(currentGrid);
             
             }
             return movimiento;
@@ -84,23 +106,14 @@ public class M24A11bpa extends Mouse {
         
         LinkedList<Grid> lista_adyacentes=obtener_Adyacentes(currentGrid);
         
-        if(pila_vecinos.get(profundidad).size()==num_elemento+1){
-            profundidad++;
-            }
+        
         
         if (lista_adyacentes.size()>0){
             for (int i =0;i<=lista_adyacentes.size();i++){
                 pila_vecinos.get(profundidad).add(lista_adyacentes.get(i));
             
             }
-        }
-        
-        
-        
-        
-        
-        
-        
+        }   
         return 0;
     }
     
@@ -149,10 +162,10 @@ public class M24A11bpa extends Mouse {
     private Integer posibles_movimientos(Grid celda_actual)
     {
         ArrayList<Integer> posibles = new ArrayList<>();
-        if (celda_actual.canGoDown()) posibles.add(Mouse.DOWN);
         if (celda_actual.canGoUp()) posibles.add(Mouse.UP);
-        if (celda_actual.canGoLeft()) posibles.add(Mouse.LEFT);
         if (celda_actual.canGoRight()) posibles.add(Mouse.RIGHT);
+        if (celda_actual.canGoDown()) posibles.add(Mouse.DOWN);
+        if (celda_actual.canGoLeft()) posibles.add(Mouse.LEFT);
         if (!posibles.isEmpty()){
             for (int i=0;i<posibles.size(); i++){
                 Integer movimiento_ret = posibles.get(i);
@@ -193,6 +206,13 @@ public class M24A11bpa extends Mouse {
         }
         boolean to_ret=(celdas_frecuentes.get(identificador_celda(x,y)) == null);
         return !(to_ret);
+    }
+    
+    private LinkedList<Grid> obtener_ruta(Grid currentGrid,Grid target){
+        LinkedList<Grid> ruta = new LinkedList<>();
+       
+
+        return ruta;
     }
     
     /**
