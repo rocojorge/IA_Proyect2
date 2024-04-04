@@ -4,6 +4,7 @@ import mouserun.game.Cheese;
 import mouserun.game.Grid;
 import mouserun.game.Mouse;
 
+
 import java.util.*;
 
 
@@ -14,7 +15,21 @@ import java.util.*;
  * El ratón utiliza una pila de movimientos para volver atrás cuando se queda sin opciones, y hace return 0 cuando la pila está vacía.
  */
 public class M24A11bpa extends Mouse {
+    
+    //Clase de soporte
+    
+    class Node{
+        public final Grid actual;
+        public final Grid padre;
 
+        private Node(Grid a, Grid p){
+            this.actual=a;
+            this.padre=p;
+        }
+    }
+
+
+    
     // Constante que indica que no hay movimientos posibles
     private final Integer SIN_MOVIMIENTOS = 0;
 
@@ -24,6 +39,12 @@ public class M24A11bpa extends Mouse {
     private HashMap<Integer, Grid> celdas_totales;
     // Pila que almacena los movimientos realizados por el ratón
     private LinkedList<Integer> movimientos;
+    //Lista de celdas cerradas
+    private HashMap<Integer,Node> cerradas;
+    //Lista nodo de celdas abiertas
+    private LinkedList<Node> abiertas;
+    //El camino de grid
+    private LinkedList<Grid> camino;
     //Lista de los vecinos
     private LinkedList<LinkedList<Grid>> pila_vecinos;
     //Lista de nodos principales por niveles
@@ -34,6 +55,8 @@ public class M24A11bpa extends Mouse {
     private int profundidad =0;
     private int num_elemento = 0;
 
+    
+    
     /**
      * Constructor de la clase Segunda_Prueba.
      * Inicializa los atributos con valores vacíos y asigna el nombre "Explorador" al ratón.
@@ -43,6 +66,8 @@ public class M24A11bpa extends Mouse {
         this.movimientos=new LinkedList<>();
         this.celdas_frecuentes=new HashMap<>();
         this.celdas_totales=new HashMap<>();
+        this.cerradas = new HashMap<>();
+        this.abiertas = new LinkedList();
         this.pila_vecinos=new LinkedList<>();
         this.profundidad= 0;
         this.num_elemento=0;
@@ -63,58 +88,57 @@ public class M24A11bpa extends Mouse {
         agrega_celda(currentGrid);
         Integer movimiento=posibles_movimientos(currentGrid);
         
-        if (profundidad==0){ //Funcionamiento en el nivel 0
-            bfs(currentGrid);
-            if(num_elemento==0) {
-                num_elemento++;
-                return posibles_movimientos(currentGrid);
-            }
-            if (currentGrid!=pila_vecinos.get(profundidad).get(num_elemento))
-                return movimiento_inverso(movimientos.pop());
-            else{
-                if(pila_vecinos.get(profundidad).size()==num_elemento+1){
-                profundidad++;
-                }
-                else{
-                    num_elemento++;
-                }
-                return posibles_movimientos(currentGrid);
-            }
-            
-            
-            
         
-        }
-        if (!movimiento.equals(SIN_MOVIMIENTOS)){
-            if (currentGrid==pila_vecinos.get(profundidad).get(num_elemento)){
-                num_elemento++;
-                bfs(currentGrid);
-            
-            }
+        if (!movimiento.equals(SIN_MOVIMIENTOS))
             return movimiento;
-        }
-        else
+        else{
             return sin_movimientos();
-        
-    }
-    
-    /**
-     * 
-     */
-    
-    private int bfs(Grid currentGrid){
-        
-        LinkedList<Grid> lista_adyacentes=obtener_Adyacentes(currentGrid);
-        
-        
-        
-        if (lista_adyacentes.size()>0){
-            for (int i =0;i<=lista_adyacentes.size();i++){
-                pila_vecinos.get(profundidad).add(lista_adyacentes.get(i));
+        }
             
+    }
+
+    public void BPA(Grid currentGrid, Cheese cheese){
+        Grid inicial = celdas_frecuentes.get(identificador_celda(cheese.getX(),cheese.getY()));
+        abiertas.add(new Node(inicial,null));
+        while(true){
+            Node procesando = abiertas.pollFirst();
+            assert procesando != null;
+            cerradas.put(identificador_celda(procesando.actual.getX(),procesando.actual.getY()),procesando);
+            if(procesando.actual.getX() == currentGrid.getX() && procesando.actual.getY()== currentGrid.getY()){
+                while(true){
+                    if(procesando.padre!=null) {
+                        camino.add(procesando.padre);
+                        procesando=cerradas.get(identificador_celda(procesando.padre.getX(),procesando.padre.getY()));
+                    }else{
+                        return;
+                    }
+                }
             }
-        }   
-        return 0;
+            if(procesando.actual.canGoUp() &&
+                    celdas_frecuentes.containsKey(identificador_celda(procesando.actual.getX(),procesando.actual.getY()+1)) &&
+                    !cerradas.containsKey(identificador_celda(procesando.actual.getX(),procesando.actual.getY()+1))){
+                Grid sucesor=celdas_frecuentes.get(identificador_celda(procesando.actual.getX(),procesando.actual.getY()+1));
+                abiertas.add(new Node(sucesor,procesando.actual));
+            }
+            if(procesando.actual.canGoDown() &&
+                    celdas_frecuentes.containsKey(identificador_celda(procesando.actual.getX(),procesando.actual.getY()-1)) &&
+                    !cerradas.containsKey(identificador_celda(procesando.actual.getX(),procesando.actual.getY()-1))){
+                Grid sucesor=celdas_frecuentes.get(identificador_celda(procesando.actual.getX(),procesando.actual.getY()-1));
+                abiertas.add(new Node(sucesor,procesando.actual));
+            }
+            if(procesando.actual.canGoLeft() &&
+                    celdas_frecuentes.containsKey(identificador_celda(procesando.actual.getX()-1,procesando.actual.getY())) &&
+                    !cerradas.containsKey(identificador_celda(procesando.actual.getX()-1,procesando.actual.getY()))){
+                Grid sucesor=celdas_frecuentes.get(identificador_celda(procesando.actual.getX()-1,procesando.actual.getY()));
+                abiertas.add(new Node(sucesor,procesando.actual));
+            }
+            if(procesando.actual.canGoRight() &&
+                    celdas_frecuentes.containsKey(identificador_celda(procesando.actual.getX()+1,procesando.actual.getY())) &&
+                    !cerradas.containsKey(identificador_celda(procesando.actual.getX()+1,procesando.actual.getY()))){
+                Grid sucesor=celdas_frecuentes.get(identificador_celda(procesando.actual.getX()+1,procesando.actual.getY()));
+                abiertas.add(new Node(sucesor,procesando.actual));
+            }
+        }
     }
     
     
@@ -259,6 +283,10 @@ public class M24A11bpa extends Mouse {
      */
     @Override
     public void newCheese() {
+        camino.clear();
+        cerradas.clear();
+        abiertas.clear();
+        
     }
 
     /**
