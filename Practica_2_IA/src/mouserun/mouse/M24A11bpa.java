@@ -28,6 +28,8 @@ public class M24A11bpa extends Mouse {
     private LinkedList<LinkedList<Grid>> pila_vecinos;
     //Lista de nodos principales por niveles
     private LinkedList<Grid> nodos_principales;
+    //Lista Nodos intersección
+    private HashMap<Grid,LinkedList<Integer>> nodos_interseccion;
     //Profundida del arbol
     private int profundidad =0;
     private int num_elemento = 0;
@@ -60,10 +62,18 @@ public class M24A11bpa extends Mouse {
     public int move(Grid currentGrid, Cheese cheese) {
         agrega_celda(currentGrid);
         Integer movimiento=posibles_movimientos(currentGrid);
-        if (!movimiento.equals(SIN_MOVIMIENTOS))
+        if (profundidad==0) bfs(currentGrid);
+        if (!movimiento.equals(SIN_MOVIMIENTOS)){
+            if (currentGrid==pila_vecinos.get(profundidad).get(num_elemento)){
+            num_elemento++;
+            bfs(currentGrid);
+            
+            }
             return movimiento;
+        }
         else
             return sin_movimientos();
+        
     }
     
     /**
@@ -73,12 +83,20 @@ public class M24A11bpa extends Mouse {
     private int bfs(Grid currentGrid){
         
         LinkedList<Grid> lista_adyacentes=obtener_Adyacentes(currentGrid);
+        
+        if(pila_vecinos.get(profundidad).size()==num_elemento+1){
+            profundidad++;
+            }
+        
         if (lista_adyacentes.size()>0){
-            for (int i =0;i<=profundidad;i++){
-                pila_vecinos.add(i,lista_adyacentes);
+            for (int i =0;i<=lista_adyacentes.size();i++){
+                pila_vecinos.get(profundidad).add(lista_adyacentes.get(i));
             
             }
         }
+        
+        
+        
         
         
         
@@ -92,7 +110,8 @@ public class M24A11bpa extends Mouse {
      * @param hijoActual La celda actual 
      * @return El metodo devuevle un array con los posibles movimientos
      */
-    private LinkedList<Grid> obtener_Adyacentes(Grid hijoActual){
+    private LinkedList<Grid> obtener_Adyacentes (Grid hijoActual)
+    {
         LinkedList<Grid> salida = new LinkedList<>();
         int actual = identificador_celda(hijoActual.getX(), hijoActual.getY());
         
