@@ -3,19 +3,18 @@ package mouserun.mouse;
 import mouserun.game.*;
 import java.util.*;
 
-public class m14C02Demonos1 extends Mouse {
+public class M24A11bae extends Mouse {
 
     //Clases de Soporte
-    //=============== 
 
     /* 
      Las clases definidas sobrecargan los metodos equals y hashcode.   
      Esto es así dado que ambos son usados como claves en estructuras HashMap.
      De no sobrecargarse, no se comportarían adecuadamente.
      */
+    
     /**
      * TDA que permite almacenar dos valores, del mismo o distinto tipo.
-     *
      * @param <A> Tipo del atributo first
      * @param <B> Tipo del atributo second
      */
@@ -62,25 +61,22 @@ public class m14C02Demonos1 extends Mouse {
     }
 
     /**
-     * Almacena una posición(x,y) y las direcciones accesibles desde la misma.
-     * Esto último, solo será válido si el nodo está marcado como explorado.
+     * Almacena una posición(x,y) y las direcciones accesibles desde la misma. Esto último, solo será 
+     * válido si el nodo está marcado como explorado.
      */
-    private class mouseNode {
+    private class nodo_raton {
 
         public int x;
         public int y;
-
         public boolean up;
         public boolean down;
         public boolean left;
         public boolean right;
-
         public boolean explored;
 
-        public mouseNode(int _x, int _y, boolean _up, boolean _down, boolean _left, boolean _right) {
+        public nodo_raton(int _x, int _y, boolean _up, boolean _down, boolean _left, boolean _right) {
             x = _x;
             y = _y;
-
             up = _up;
             down = _down;
             left = _left;
@@ -88,17 +84,17 @@ public class m14C02Demonos1 extends Mouse {
             explored = true;
         }
 
-        public mouseNode(Pair<Integer, Integer> pos, boolean _up, boolean _down, boolean _left, boolean _right) {
+        public nodo_raton(Pair<Integer, Integer> pos, boolean _up, boolean _down, boolean _left, boolean _right) {
             this(pos.first, pos.second, _up, _down, _left, _right);
         }
 
-        public mouseNode(int _x, int _y) {
+        public nodo_raton(int _x, int _y) {
             x = _x;
             y = _y;
             explored = false;
         }
 
-        public mouseNode(Pair<Integer, Integer> pos) {
+        public nodo_raton(Pair<Integer, Integer> pos) {
             this(pos.first, pos.second);
         }
 
@@ -111,10 +107,10 @@ public class m14C02Demonos1 extends Mouse {
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof mouseNode)) {
+            if (!(o instanceof nodo_raton)) {
                 return false;
             }
-            mouseNode node = (mouseNode) o;
+            nodo_raton node = (nodo_raton) o;
             return x == node.x && y == node.y;
         }
 
@@ -131,7 +127,7 @@ public class m14C02Demonos1 extends Mouse {
 
     
     //Fin clases de soporte
-    private HashMap<Pair<Integer, Integer>, mouseNode> nodos_conocidos;
+    private HashMap<Pair<Integer, Integer>, nodo_raton> nodos_conocidos;
     
     //Contiene los nodos conocidos del laberinto. 
     //Usa una posición (x,y) como clave.
@@ -147,7 +143,7 @@ public class m14C02Demonos1 extends Mouse {
 
     //CONSTRUCTOR
     //===========
-    public m14C02Demonos1() {
+    public M24A11bae() {
         super("M24A11bae");
         Contador_bomba = 0;
         n_bombas = 5;
@@ -162,14 +158,14 @@ public class m14C02Demonos1 extends Mouse {
         
         
         Pair<Integer, Integer> currentPos = new Pair<>(Grid_actual.getX(), Grid_actual.getY());
-        mouseNode Nodo_actual;
+        nodo_raton Nodo_actual;
 
         //Buscamos en nodos_conocidos la posición actual. Si está, Nodo_actual será el nodo almacenado en caso contrario, se crea un nuevo nodo y se almacena.
         
         if (nodos_conocidos.containsKey(currentPos)) {
             Nodo_actual = nodos_conocidos.get(currentPos);
         } else {
-            Nodo_actual = new mouseNode(
+            Nodo_actual = new nodo_raton(
                     currentPos,
                     Grid_actual.canGoUp(), Grid_actual.canGoDown(),
                     Grid_actual.canGoLeft(), Grid_actual.canGoRight()
@@ -205,20 +201,11 @@ public class m14C02Demonos1 extends Mouse {
         if (n_bombas > 0) {
             int cuenta_salida = 0;
             //Almacena la cantidad de direcciones por las que se puede avanzar, desde el nodo actual.
-
-            if (Nodo_actual.up) {
-                cuenta_salida++;
-            }
-            if (Nodo_actual.down) {
-                cuenta_salida++;
-            }
-            if (Nodo_actual.left) {
-                cuenta_salida++;
-            }
-            if (Nodo_actual.right) {
-                cuenta_salida++;
-            }
-
+            if (Nodo_actual.up)cuenta_salida++;
+            if (Nodo_actual.down)cuenta_salida++;
+            if (Nodo_actual.left)cuenta_salida++;
+            if (Nodo_actual.right)cuenta_salida++;
+            
             //Según el número de movimientos y el número de salidas, se decide si colocar, o no, una bomba.
             if (Contador_bomba > 30 && cuenta_salida > 3) {
                 Contador_bomba = 0;
@@ -255,23 +242,22 @@ public class m14C02Demonos1 extends Mouse {
         return camino.pop();
     }
     
-    void getCamino(mouseNode rootNode, Pair<Integer, Integer> target) {
-        List<Pair<Integer, mouseNode>> candidatos = new ArrayList<>(); //Guarda la profundidad del nodo y el nodo
-        HashMap<Pair<Integer, Integer>, mouseNode> anteriores = new HashMap<>();
-        mouseNode target_node = null;
+    void getCamino(nodo_raton root_node, Pair<Integer, Integer> target) {
+        List<Pair<Integer, nodo_raton>> candidatos = new ArrayList<>(); //Guarda la profundidad del nodo y el nodo
+        HashMap<Pair<Integer, Integer>, nodo_raton> anteriores = new HashMap<>();
+        nodo_raton target_node = null;
 
         //Llamadas a búsquedas
         if (busqueda_informada) {
-            busqueda_A_star(rootNode, target, anteriores);
+            busqueda_A_star(root_node, target, anteriores);
             target_node = nodos_conocidos.get(target); //El nodo objetivo es el mismo queso.
         } else {
-            //Comenzamos con límite 5. Si no hay casillas sin explorar,
-            //incrementamos dicho límite en 5 unidades.
+            //Comenzamos con límite 5. Si no hay casillas sin explorar, incrementamos dicho límite en 5 unidades.
 
             int limite = 5;
             target_node = null;
             while (target_node == null) {
-                target_node = busqueda_profundidad_limitada(rootNode, target, anteriores, limite);
+                target_node = busqueda_profundidad_limitada(root_node, target, anteriores, limite);
                 limite += 5;
             }
         }
@@ -284,16 +270,16 @@ public class m14C02Demonos1 extends Mouse {
             int limite = 5;
             target_node = null;
             while (target_node == null) {
-                target_node = busqueda_profundidad_limitada(rootNode, target, anteriores, limite);
+                target_node = busqueda_profundidad_limitada(root_node, target, anteriores, limite);
                 limite += 5;
             }
         }
 
         //Finalmente calculamos el camino al nodo objetivo          
-        mouseNode curNode = anteriores.get(target_node.get_pos());
+        nodo_raton curNode = anteriores.get(target_node.get_pos());
         camino.add(get_direction(curNode.get_pos(), target_node.get_pos()));
 
-        while (curNode != rootNode) {
+        while (curNode != root_node) {
             Pair<Integer, Integer> targetPos = curNode.get_pos();
             curNode = anteriores.get(curNode.get_pos());
             camino.add(get_direction(curNode.get_pos(), targetPos));
@@ -312,27 +298,23 @@ public class m14C02Demonos1 extends Mouse {
     }
     
     /**
-     * Realiza una búsqueda en profundidad limitada. Almacenara los antecesores
-     * de cada nodo para poder calcular el camino y manejará una lista de nodos
-     * candidatos, no explorados exclusivamente, que se emplearán en el cálculo
-     * del nodo a devolver.
-     *
-     * @param rootNode Nodo inicial.
+     * Realiza una búsqueda en profundidad limitada. Almacenara los antecesores de cada nodo para poder calcular el camino y manejará una lista de nodos
+     * candidatos, no explorados exclusivamente, que se emplearán en el cálculo del nodo a devolver.
+     * @param root_node Nodo inicial.
      * @param target Posición objetivo.
      * @param anteriores Almacena el nodo anterior de cada posición.
      * @param limite Limite de la busqueda
-     * @return null si no hay casillas objetivo sino, mejor nodo candidato
-     * calculada.
+     * @return null si no hay casillas objetivo sino, mejor nodo candidato calculada.
      */
-    mouseNode busqueda_profundidad_limitada(mouseNode rootNode, Pair<Integer, Integer> target, HashMap<Pair<Integer, Integer>, mouseNode> anteriores, int limite) {
-        Stack<Pair<Integer, mouseNode>> abiertos = new Stack<>();
-        HashMap<Pair<Integer, Integer>, mouseNode> cerrados = new HashMap<>();
-        List<Pair<Integer, mouseNode>> candidatos = new LinkedList<>();
+    nodo_raton busqueda_profundidad_limitada(nodo_raton root_node, Pair<Integer, Integer> target, HashMap<Pair<Integer, Integer>, nodo_raton> anteriores, int limite) {
+        Stack<Pair<Integer, nodo_raton>> abiertos = new Stack<>();
+        HashMap<Pair<Integer, Integer>, nodo_raton> cerrados = new HashMap<>();
+        List<Pair<Integer, nodo_raton>> candidatos = new LinkedList<>();
 
-        abiertos.add(new Pair<>(0, rootNode));
+        abiertos.add(new Pair<>(0, root_node));
 
         while (!abiertos.isEmpty()) {
-            Pair<Integer, mouseNode> v = abiertos.pop();
+            Pair<Integer, nodo_raton> v = abiertos.pop();
             cerrados.put(v.second.get_pos(), v.second);
 
             int nivel = v.first + 1;
@@ -349,15 +331,15 @@ public class m14C02Demonos1 extends Mouse {
                     curPos.second--;
 
                     if (nodos_conocidos.containsKey(curPos)) {
-                        mouseNode w = nodos_conocidos.get(curPos);
-                        Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                        nodo_raton w = nodos_conocidos.get(curPos);
+                        Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                         if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                             abiertos.add(insert);
                             anteriores.put(w.get_pos(), v.second);
                         }
                     } else {
-                        mouseNode w = new mouseNode(curPos);
-                        Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                        nodo_raton w = new nodo_raton(curPos);
+                        Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                         if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                             abiertos.add(insert);
                             anteriores.put(w.get_pos(), v.second);
@@ -372,15 +354,15 @@ public class m14C02Demonos1 extends Mouse {
                     curPos.first--;
 
                     if (nodos_conocidos.containsKey(curPos)) {
-                        mouseNode w = nodos_conocidos.get(curPos);
-                        Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                        nodo_raton w = nodos_conocidos.get(curPos);
+                        Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                         if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                             abiertos.add(insert);
                             anteriores.put(w.get_pos(), v.second);
                         }
                     } else {
-                        mouseNode w = new mouseNode(curPos);
-                        Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                        nodo_raton w = new nodo_raton(curPos);
+                        Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                         if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                             abiertos.add(insert);
                             anteriores.put(w.get_pos(), v.second);
@@ -396,15 +378,15 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.first++;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
                     }
                 } else {
-                    mouseNode w = new mouseNode(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = new nodo_raton(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -419,15 +401,15 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.second++;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
                     }
                 } else {
-                    mouseNode w = new mouseNode(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = new nodo_raton(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (nivel <= limite && !cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -437,7 +419,7 @@ public class m14C02Demonos1 extends Mouse {
             }
         }
 
-        int targetIndex = get_min_index(candidatos, target, rootNode);
+        int targetIndex = get_min_index(candidatos, target, root_node);
         if (targetIndex == -1) {
             return null;
         }
@@ -446,22 +428,21 @@ public class m14C02Demonos1 extends Mouse {
     
 
     /**
-     * Emplea la búsqueda A* para hallar un camino entre el nodo rootNode y la
-     * posición target
-     * @param rootNode nodo inicial.
+     * Emplea la búsqueda A* para hallar un camino entre el nodo root_node y la posición target
+     * @param root_node nodo inicial.
      * @param target posición objetivo.
      * @param anteriores almacena el nodo antecesor a una posición dada.
      */
-    void busqueda_A_star(mouseNode rootNode,Pair<Integer,Integer> target,HashMap<Pair<Integer,Integer>,mouseNode>anteriores) 
+    void busqueda_A_star(nodo_raton root_node,Pair<Integer,Integer> target,HashMap<Pair<Integer,Integer>,nodo_raton>anteriores) 
     {
-        List<Pair<Integer, mouseNode>> abiertos = new LinkedList<>();
-        HashMap<Pair<Integer, Integer>, mouseNode> cerrados = new HashMap<>();
-        abiertos.add(new Pair<>(0, rootNode));
+        List<Pair<Integer, nodo_raton>> abiertos = new LinkedList<>();
+        HashMap<Pair<Integer, Integer>, nodo_raton> cerrados = new HashMap<>();
+        abiertos.add(new Pair<>(0, root_node));
         while (!abiertos.isEmpty()) {
             int min = 999;
             int minIndex = 0;
             for (int i = 0; i < abiertos.size(); i++) {
-                Pair<Integer, mouseNode> w = abiertos.get(i);
+                Pair<Integer, nodo_raton> w = abiertos.get(i);
                 if (w.second.get_pos() == target) {
                     minIndex = i;
                     break;
@@ -473,7 +454,7 @@ public class m14C02Demonos1 extends Mouse {
                 }
             }
 
-            Pair<Integer, mouseNode> v = abiertos.get(minIndex);
+            Pair<Integer, nodo_raton> v = abiertos.get(minIndex);
             abiertos.remove(v);
             cerrados.put(v.second.get_pos(), v.second);
             int nivel = v.first + 1;
@@ -488,8 +469,8 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.second--;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (!cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -503,8 +484,8 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.first--;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (!cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -518,8 +499,8 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.first++;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (!cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -533,8 +514,8 @@ public class m14C02Demonos1 extends Mouse {
                 curPos.second++;
 
                 if (nodos_conocidos.containsKey(curPos)) {
-                    mouseNode w = nodos_conocidos.get(curPos);
-                    Pair<Integer, mouseNode> insert = new Pair<>(nivel, w);
+                    nodo_raton w = nodos_conocidos.get(curPos);
+                    Pair<Integer, nodo_raton> insert = new Pair<>(nivel, w);
                     if (!cerrados.containsKey(insert.second.get_pos())) {
                         abiertos.add(insert);
                         anteriores.put(w.get_pos(), v.second);
@@ -551,14 +532,12 @@ public class m14C02Demonos1 extends Mouse {
     }
 
     /**
-     * Dada una lista de nodos, emplea una función heurística para encontrar el
-     * nodo con menor valor y devuelve su índice.
-     *
+     * Dada una lista de nodos, emplea una función heurística para encontrar el nodo con menor valor y devuelve su índice.
      * @param nodes lista de nodos candidatos
      * @param target posición objetivo
      * @return Devuelve el índice de la lista nodes con menor valor.
      */
-    private int get_min_index(List<Pair<Integer, mouseNode>> nodes, Pair<Integer, Integer> target, mouseNode init) {
+    private int get_min_index(List<Pair<Integer, nodo_raton>> nodes, Pair<Integer, Integer> target, nodo_raton init) {
         if (nodes.isEmpty()) {
             return -1;
         }
@@ -586,14 +565,12 @@ public class m14C02Demonos1 extends Mouse {
     }
 
     /**
-     * El nodo de entrada es evaluado, respecto a target, mediante una función
-     * heurística y se devuelve el resultado
-     *
+     * El nodo de entrada es evaluado, respecto a target, mediante una función heurística y se devuelve el resultado
      * @param init nodo a calcular
      * @param target posición objetivo
      * @return Valor de la función heurística.
      */
-    private int get_value(Pair<Integer, mouseNode> init, Pair<Integer, Integer> target) {
+    private int get_value(Pair<Integer, nodo_raton> init, Pair<Integer, Integer> target) {
 
         int dist_target = camino_minimo(init.second.get_pos(), target);
         int costeCasilla = init.first;
@@ -602,9 +579,7 @@ public class m14C02Demonos1 extends Mouse {
     }
 
     /**
-     * Dadas dos posiciones, devuelve la dirección a seguir por el ratón para
-     * llegar de una a otra.
-     *
+     * Dadas dos posiciones, devuelve la dirección a seguir por el ratón para llegar de una a otra.
      * @param init posición inicial
      * @param target posición destino
      * @return Movimiento para ir de init a target.
