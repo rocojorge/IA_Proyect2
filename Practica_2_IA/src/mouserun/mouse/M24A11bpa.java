@@ -44,18 +44,7 @@ public class M24A11bpa extends Mouse {
     //Lista nodo de celdas abiertas
     private LinkedList<Node> abiertas;
     //El camino de grid
-    private LinkedList<Grid> camino;
-    //Lista de los vecinos
-    private LinkedList<LinkedList<Grid>> pila_vecinos;
-    //Lista de nodos principales por niveles
-    private LinkedList<Grid> nodos_principales;
-    //Lista Nodos intersección
-    private HashMap<Grid,LinkedList<Integer>> nodos_interseccion;
-    //Profundida del arbol
-    private int profundidad =0;
-    private int num_elemento = 0;
-
-    
+    private LinkedList<Grid> camino;    
     
     /**
      * Constructor de la clase Segunda_Prueba.
@@ -69,9 +58,7 @@ public class M24A11bpa extends Mouse {
         this.cerradas = new HashMap<>();
         this.camino = new LinkedList<>();
         this.abiertas = new LinkedList();
-        this.pila_vecinos=new LinkedList<>();
-        this.profundidad= 0;
-        this.num_elemento=0;
+
         
     }
 
@@ -228,12 +215,6 @@ public class M24A11bpa extends Mouse {
         return !(to_ret);
     }
     
-    private LinkedList<Grid> obtener_ruta(Grid currentGrid,Grid target){
-        LinkedList<Grid> ruta = new LinkedList<>();
-       
-
-        return ruta;
-    }
     
     /**
      * Método que devuelve el movimiento movimiento_inverso a uno dado.
